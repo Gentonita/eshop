@@ -1,4 +1,4 @@
-package com.axians.eshop.dto.request;
+package com.axians.eshop.dto.request.user;
 
 import java.time.LocalDate;
 

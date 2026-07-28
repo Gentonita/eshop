@@ -2,10 +2,8 @@ package com.axians.eshop.entity;
 
 import java.time.LocalDate;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import com.axians.eshop.enums.Role;
 import com.axians.eshop.valueobject.Email;
@@ -15,9 +13,7 @@ import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -30,11 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
-public class User {
-
-	@Id
-	@GeneratedValue(strategy = GenerationType.UUID)
-	private UUID id;
+public class User extends BaseEntity {
 
 	@Column(nullable = false)
 	private String firstName;
@@ -54,17 +46,9 @@ public class User {
 	@Column(nullable = false)
 	private Role role;
 
-	private LocalDateTime deletedAt;
-
-	@Column(nullable = false)
-	private LocalDateTime createdAt;
-
-	@Column(nullable = false)
-	private LocalDateTime updatedAt;
-	
 	@OneToOne(mappedBy = "user")
 	private Cart cart;
-	
+
 	@OneToMany(mappedBy = "user")
 	private List<Order> orders = new ArrayList<>();
 
@@ -75,13 +59,6 @@ public class User {
 		this.password = password;
 		this.birthday = birthday;
 		this.role = role;
-		this.createdAt = LocalDateTime.now();
-		this.updatedAt = LocalDateTime.now();
 	}
 
-	
-
-	public void updateTimestamp() {
-		this.updatedAt = LocalDateTime.now();
-	}
 }
