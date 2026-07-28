@@ -2,8 +2,8 @@ package com.axians.eshop.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.axians.eshop.dto.request.CreateUserRequest;
-import com.axians.eshop.dto.response.UserResponse;
+import com.axians.eshop.dto.request.user.CreateUserRequest;
+import com.axians.eshop.dto.response.user.UserResponse;
 import com.axians.eshop.entity.User;
 import com.axians.eshop.enums.Role;
 import com.axians.eshop.valueobject.Email;

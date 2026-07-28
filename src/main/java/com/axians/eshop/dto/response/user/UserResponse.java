@@ -1,4 +1,4 @@
-package com.axians.eshop.dto.response;
+package com.axians.eshop.dto.response.user;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -8,9 +8,11 @@ import com.axians.eshop.enums.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserResponse {
 
     private UUID id;

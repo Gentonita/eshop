@@ -26,4 +26,21 @@ public class GlobalExceptionHandler {
     			.body(ex.getMessage());
     }
     
+    @ExceptionHandler(CategoryNotFoundException.class)
+    public ResponseEntity<String>handleCategoryNotFound(
+    		CategoryNotFoundException ex){
+    	return ResponseEntity.status(HttpStatus.NOT_FOUND)
+    			.body(ex.getMessage());
+    }
+    
+    @ExceptionHandler(CategoryAlreadyExistsException.class)
+    public ResponseEntity<String> handleCategoryExists(
+    		CategoryAlreadyExistsException ex) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
+    
+    
 }
