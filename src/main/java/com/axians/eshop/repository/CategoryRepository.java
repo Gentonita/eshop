@@ -1,6 +1,7 @@
 package com.axians.eshop.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,5 +15,6 @@ public interface CategoryRepository extends JpaRepository<Category, UUID>{
 	boolean existsByNameIgnoreCaseAndDeletedAtIsNull(String name);
 	
 	List<Category>findByDeletedAtIsNull();
-
+	
+	Optional<Category> findByIdAndDeletedAtIsNull(UUID id);
 }
