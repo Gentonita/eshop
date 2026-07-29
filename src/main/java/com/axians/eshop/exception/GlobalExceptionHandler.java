@@ -8,39 +8,38 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+	@ExceptionHandler(EmailAlreadyExistsException.class)
+	public ResponseEntity<String> handleEmailExists(EmailAlreadyExistsException ex) {
 
-    @ExceptionHandler(EmailAlreadyExistsException.class)
-    public ResponseEntity<String> handleEmailExists(
-            EmailAlreadyExistsException ex) {
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+	}
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
-    }
-    
-    @ExceptionHandler(UserNotFoundException.class)
-    public ResponseEntity<String>handleUserNotFound(
-    		UserNotFoundException ex){
-    	return ResponseEntity
-    			.status(HttpStatus.NOT_FOUND)
-    			.body(ex.getMessage());
-    }
-    
-    @ExceptionHandler(CategoryNotFoundException.class)
-    public ResponseEntity<String>handleCategoryNotFound(
-    		CategoryNotFoundException ex){
-    	return ResponseEntity.status(HttpStatus.NOT_FOUND)
-    			.body(ex.getMessage());
-    }
-    
-    @ExceptionHandler(CategoryAlreadyExistsException.class)
-    public ResponseEntity<String> handleCategoryExists(
-    		CategoryAlreadyExistsException ex) {
+	@ExceptionHandler(UserNotFoundException.class)
+	public ResponseEntity<String> handleUserNotFound(UserNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
 
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
-    }
-    
-    
+	@ExceptionHandler(CategoryNotFoundException.class)
+	public ResponseEntity<String> handleCategoryNotFound(CategoryNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+
+	@ExceptionHandler(CategoryAlreadyExistsException.class)
+	public ResponseEntity<String> handleCategoryExists(CategoryAlreadyExistsException ex) {
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+	}
+
+	@ExceptionHandler(ProductNotFoundException.class)
+	public ResponseEntity<String> handleProductNotFound(ProductNotFoundException ex) {
+
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+
+	@ExceptionHandler(ProductAlreadyExistsException.class)
+	public ResponseEntity<String> handleProductAlreadyExists(ProductAlreadyExistsException ex) {
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+	}
+
 }
