@@ -62,7 +62,7 @@ public class UserService {
 	}
 
 	public UserResponse updateUser(UpdateUserRequest updateUserRequest, UUID id) {
-		User user = userRepo.findById(id)
+		User user = userRepo.findByIdAndDeletedAtIsNull(id)
 				.orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found!"));
 
 		user.setFirstName(updateUserRequest.getFirstName());
