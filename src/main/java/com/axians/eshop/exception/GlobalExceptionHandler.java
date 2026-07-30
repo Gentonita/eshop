@@ -2,6 +2,7 @@ package com.axians.eshop.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -41,5 +42,14 @@ public class GlobalExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
 	}
+	
+	@ExceptionHandler(MethodArgumentNotValidException.class)
+	public ResponseEntity<String> handleValidationException(
+	        MethodArgumentNotValidException ex) {
+
+	    return ResponseEntity.badRequest()
+	            .body(ex.getBindingResult().getFieldError().getDefaultMessage());
+	}
+	
 
 }
