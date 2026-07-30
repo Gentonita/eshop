@@ -11,7 +11,7 @@ public class CategoryMapper {
 	
 	public Category toEntity(CreateCategoryRequest request) {
 		return new Category(
-				request.getName(),
+				request.getName().trim(),
 				request.getDescription()
 				);
 	}

@@ -36,7 +36,7 @@ public class CategoryService {
 		}
 
 		Category category = categoryMapper.toEntity(request);
-		category.setName(name);
+		
 
 		Category savedCategory = categoryRepo.save(category);
 
