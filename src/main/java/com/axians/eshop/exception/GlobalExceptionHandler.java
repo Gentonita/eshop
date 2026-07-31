@@ -51,5 +51,18 @@ public class GlobalExceptionHandler {
 	            .body(ex.getBindingResult().getFieldError().getDefaultMessage());
 	}
 	
+	@ExceptionHandler(CartAlreadyExistsException.class)
+	public ResponseEntity<String> handleCartAlreadyExists(CartAlreadyExistsException ex) {
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+	}
+	
+	@ExceptionHandler(CartNotFoundException.class)
+	public ResponseEntity<String> handleCartNotFound(CartNotFoundException ex) {
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+	}
+	
+	
+	
 
 }
