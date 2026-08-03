@@ -36,7 +36,7 @@ public class CartService {
 		User user = userRepo.findByIdAndDeletedAtIsNull(request.getUserId()).orElseThrow(() ->  new UserNotFoundException(
                 "User with id " + request.getUserId() + " not found!"));
 		
-		if(cartRepo.existsByUserIdAndDeletedAtIsNull(user.getId())) {
+		if(cartRepo.existsByUserId(user.getId())) {
 			 throw new CartAlreadyExistsException("Cart already exists for this user.");
 		}
 		
@@ -74,13 +74,6 @@ public class CartService {
 		
 	}  
 	
-	public void deleteCart(UUID id) {
-		Cart cart = cartRepo.findByIdAndDeletedAtIsNull(id).orElseThrow(() -> new CartNotFoundException( "Cart with id " + id + " not found!"));
-		
-		cart.setDeletedAt(LocalDateTime.now());
-		
-		cartRepo.save(cart);
-		
-	}
+	
 
 }

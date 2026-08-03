@@ -57,12 +57,5 @@ public class CartController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
 
-	@DeleteMapping("{id}")
-	public ResponseEntity<Void> deleteCart(@PathVariable UUID id) {
-		cartService.deleteCart(id);
-
-		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-
-	}
-
+	
 }

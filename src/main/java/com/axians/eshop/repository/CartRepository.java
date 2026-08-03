@@ -16,7 +16,7 @@ public interface CartRepository extends JpaRepository <Cart, UUID> {
 
 	Optional<Cart> findByUserIdAndDeletedAtIsNull(UUID userId);
 
-	boolean existsByUserIdAndDeletedAtIsNull(UUID userId);
+	boolean existsByUserId(UUID userId);
 
 	List<Cart> findByDeletedAtIsNull();
 
