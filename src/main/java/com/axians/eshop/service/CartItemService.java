@@ -25,33 +25,42 @@ import com.axians.eshop.repository.ProductRepository;
 
 @Service
 public class CartItemService {
+
 	private final CartItemRepository cartItemRepo;
 	private final CartRepository cartRepo;
 	private final ProductRepository productRepo;
 	private final CartItemMapper cartItemMapper;
-	
-	
-	public CartItemService(CartItemRepository cartItemRepo,CartRepository cartRepo, ProductRepository productRepo, CartItemMapper cartItemMapper) {
+
+	public CartItemService(CartItemRepository cartItemRepo,
+						   CartRepository cartRepo,
+						   ProductRepository productRepo,
+						   CartItemMapper cartItemMapper) {
 		this.cartItemRepo = cartItemRepo;
 		this.cartRepo = cartRepo;
 		this.productRepo = productRepo;
 		this.cartItemMapper = cartItemMapper;
 	}
-	
+
 	public CartItemResponse addCartItem(CreateCartItemRequest request) {
-		Cart cart = cartRepo.findByIdAndDeletedAtIsNull(request.getCartId()).orElseThrow(() -> new CartNotFoundException ("Cart with id " + request.getCartId() + " not found!"));
-		
-		Product product = productRepo.findByIdAndDeletedAtIsNull(request.getProductId()).orElseThrow(() -> new ProductNotFoundException("Product with id " + request.getProductId() + " not found!"));
-		
-		if(request.getQuantity() > product.getStockQuantity()) {
-			throw new NotEnoughStockException("Not enough stock available for this product");
+
+		Cart cart = cartRepo.findByIdAndDeletedAtIsNull(request.getCartId())
+				.orElseThrow(() -> new CartNotFoundException(
+						"Cart with id " + request.getCartId() + " not found!"));
+
+		Product product = productRepo.findByIdAndDeletedAtIsNull(request.getProductId())
+				.orElseThrow(() -> new ProductNotFoundException(
+						"Product with id " + request.getProductId() + " not found!"));
+
+		if (request.getQuantity() > product.getStockQuantity()) {
+			throw new NotEnoughStockException(
+					"Only " + product.getStockQuantity() + " items are available in stock.");
 		}
-		
-		Optional<CartItem> existingCartItem = cartItemRepo.findByCartIdAndProductIdAndDeletedAtIsNull(
-		        cart.getId(),
-		        product.getId()
-		);
-		
+
+		Optional<CartItem> existingCartItem =
+				cartItemRepo.findByCartIdAndProductIdAndDeletedAtIsNull(
+						cart.getId(),
+						product.getId());
+
 		if (existingCartItem.isPresent()) {
 
 			CartItem cartItem = existingCartItem.get();
@@ -59,84 +68,78 @@ public class CartItemService {
 			int newQuantity = cartItem.getQuantity() + request.getQuantity();
 
 			if (newQuantity > product.getStockQuantity()) {
-				throw new NotEnoughStockException("Not enough stock available for this product");
+				throw new NotEnoughStockException(
+						"Only " + product.getStockQuantity() + " items are available in stock.");
 			}
 
 			cartItem.setQuantity(newQuantity);
 
-			CartItem savedCartItem = cartItemRepo.save(cartItem);
-
-			return cartItemMapper.toResponse(savedCartItem);
-		}else {
-			CartItem  newCartItem = new CartItem( 
-					request.getQuantity(),
-					cart,
-					product
-					);
-			CartItem savedCartItem = cartItemRepo.save(newCartItem);
-
-			return cartItemMapper.toResponse(savedCartItem);
+			return cartItemMapper.toResponse(cartItemRepo.save(cartItem));
 		}
+
+		CartItem newCartItem = new CartItem(
+				request.getQuantity(),
+				cart,
+				product);
+
+		return cartItemMapper.toResponse(cartItemRepo.save(newCartItem));
 	}
-	
-	public List<CartItemResponse> getAllCartItems(){
-		List<CartItem> cartItems = cartItemRepo.findByDeletedAtIsNull();
-		
-		return cartItems.stream()
+
+	public List<CartItemResponse> getAllCartItems() {
+
+		return cartItemRepo.findByDeletedAtIsNull()
+				.stream()
 				.map(cartItemMapper::toResponse)
 				.collect(Collectors.toList());
 	}
-	
-	public List<CartItemResponse> getCartItemsByCartId(UUID cartId){
-		List<CartItem> cartItems  = cartItemRepo.findByCartIdAndDeletedAtIsNull(cartId);
-		
-		return cartItems .stream()
+
+	public List<CartItemResponse> getCartItemsByCartId(UUID cartId) {
+
+		cartRepo.findByIdAndDeletedAtIsNull(cartId)
+				.orElseThrow(() -> new CartNotFoundException(
+						"Cart with id " + cartId + " not found!"));
+
+		return cartItemRepo.findByCartIdAndDeletedAtIsNull(cartId)
+				.stream()
 				.map(cartItemMapper::toResponse)
 				.collect(Collectors.toList());
 	}
-	
+
 	public CartItemResponse getCartItemById(UUID id) {
 
-	    CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
-	            .orElseThrow(() ->
-	                    new CartItemNotFoundException(
-	                            "Cart item with id " + id + " not found!"
-	                    ));
+		CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
+				.orElseThrow(() -> new CartItemNotFoundException(
+						"Cart item with id " + id + " not found!"));
 
-	    return cartItemMapper.toResponse(cartItem);
+		return cartItemMapper.toResponse(cartItem);
 	}
-	
+
 	public CartItemResponse updateCartItem(UUID id, UpdateCartItemRequest request) {
 
-	    CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
-	            .orElseThrow(() ->
-	                    new CartItemNotFoundException(
-	                            "Cart item with id " + id + " not found!"
-	                    ));
+		CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
+				.orElseThrow(() -> new CartItemNotFoundException(
+						"Cart item with id " + id + " not found!"));
 
-	    Product product = cartItem.getProduct();
+		Product product = cartItem.getProduct();
 
-	    if (request.getQuantity() > product.getStockQuantity()) {
-	        throw new NotEnoughStockException("Not enough stock available for this product");
-	    }
+		if (request.getQuantity() > product.getStockQuantity()) {
+			throw new NotEnoughStockException(
+					"Only " + product.getStockQuantity() + " items are available in stock.");
+		}
 
-	    cartItem.setQuantity(request.getQuantity());
+		cartItem.setQuantity(request.getQuantity());
 
-	    CartItem updatedCartItem = cartItemRepo.save(cartItem);
-
-	    return cartItemMapper.toResponse(updatedCartItem);
+		return cartItemMapper.toResponse(cartItemRepo.save(cartItem));
 	}
-	
+
 	public void deleteCartItem(UUID id) {
 
-	    CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
-	            .orElseThrow(() ->
-	                    new CartItemNotFoundException(
-	                            "Cart item with id " + id + " not found!"
-	                    ));
+		CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
+				.orElseThrow(() -> new CartItemNotFoundException(
+						"Cart item with id " + id + " not found!"));
 
-	    cartItem.setDeletedAt(LocalDateTime.now());
+		cartItem.setDeletedAt(LocalDateTime.now());
 
-	    cartItemRepo.save(cartItem);
+		cartItemRepo.save(cartItem);
 	}
 }

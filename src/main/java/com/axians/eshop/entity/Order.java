@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.axians.eshop.enums.OrderStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,9 +28,10 @@ import lombok.Setter;
 @Table(name = "orders")
 public class Order extends BaseEntity {
 
-	@Column(nullable = false)
+	@Column(nullable = false, precision = 10, scale = 2)
 	private BigDecimal totalPrice;
-
+	
+	
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private OrderStatus status;
@@ -41,7 +43,7 @@ public class Order extends BaseEntity {
 	@JoinColumn(name = "user_id", nullable = false)
 	private User user;
 
-	@OneToMany(mappedBy = "order")
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<OrderItem> orderItems = new ArrayList<>();
 
 	public Order(BigDecimal totalPrice, OrderStatus status, User user) {
@@ -51,5 +53,10 @@ public class Order extends BaseEntity {
 		this.orderDate = LocalDateTime.now();
 
 	}
-
+	
+	public void addOrderItem(OrderItem orderItem){
+	    orderItems.add(orderItem);
+	    orderItem.setOrder(this);
+	}
+                            
 }
