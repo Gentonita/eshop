@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.axians.eshop.dto.request.cartitem.CreateCartItemRequest;
 import com.axians.eshop.dto.request.cartitem.UpdateCartItemRequest;
+import com.axians.eshop.dto.response.cartitem.CartDetailsResponse;
 import com.axians.eshop.dto.response.cartitem.CartItemResponse;
 import com.axians.eshop.service.CartItemService;
 
@@ -48,10 +49,11 @@ public class CartItemController {
 	}
 	
 	@GetMapping("cart/{cartId}")
-	public ResponseEntity<List<CartItemResponse>> getAllCartItemsByCartId(@PathVariable UUID cartId){
-		List<CartItemResponse> response = cartItemService.getCartItemsByCartId(cartId);
-		
-		return ResponseEntity.status(HttpStatus.OK).body(response); 
+	public ResponseEntity<CartDetailsResponse> getCartItemsByCartId(@PathVariable UUID cartId) {
+
+	    CartDetailsResponse response = cartItemService.getCartItemsByCartId(cartId);
+
+	    return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("{id}")
