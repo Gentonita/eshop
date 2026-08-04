@@ -1,5 +1,7 @@
 package com.axians.eshop.repository;
 
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,5 +11,11 @@ import com.axians.eshop.entity.Order;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, UUID> {
+
+	Optional<Order> findByIdAndDeletedAtIsNull(UUID id);
+
+	List<Order> findByDeletedAtIsNull();
+
+	List<Order> findByUserIdAndDeletedAtIsNull(UUID userId);
 
 }

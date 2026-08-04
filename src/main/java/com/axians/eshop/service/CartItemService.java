@@ -33,7 +33,10 @@ public class CartItemService {
 	private final ProductRepository productRepo;
 	private final CartItemMapper cartItemMapper;
 
-	public CartItemService(CartItemRepository cartItemRepo, CartRepository cartRepo, ProductRepository productRepo,CartItemMapper cartItemMapper) {
+	public CartItemService(CartItemRepository cartItemRepo,
+						   CartRepository cartRepo,
+						   ProductRepository productRepo,
+						   CartItemMapper cartItemMapper) {
 		this.cartItemRepo = cartItemRepo;
 		this.cartRepo = cartRepo;
 		this.productRepo = productRepo;
@@ -43,17 +46,22 @@ public class CartItemService {
 	public CartItemResponse addCartItem(CreateCartItemRequest request) {
 
 		Cart cart = cartRepo.findByIdAndDeletedAtIsNull(request.getCartId())
-				.orElseThrow(() -> new CartNotFoundException("Cart with id " + request.getCartId() + " not found!"));
+				.orElseThrow(() -> new CartNotFoundException(
+						"Cart with id " + request.getCartId() + " not found!"));
 
-		Product product = productRepo.findByIdAndDeletedAtIsNull(request.getProductId()).orElseThrow(
-				() -> new ProductNotFoundException("Product with id " + request.getProductId() + " not found!"));
+		Product product = productRepo.findByIdAndDeletedAtIsNull(request.getProductId())
+				.orElseThrow(() -> new ProductNotFoundException(
+						"Product with id " + request.getProductId() + " not found!"));
 
 		if (request.getQuantity() > product.getStockQuantity()) {
-			throw new NotEnoughStockException("Only " + product.getStockQuantity() + " items are available in stock.");
+			throw new NotEnoughStockException(
+					"Only " + product.getStockQuantity() + " items are available in stock.");
 		}
 
-		Optional<CartItem> existingCartItem = cartItemRepo.findByCartIdAndProductIdAndDeletedAtIsNull(cart.getId(),
-				product.getId());
+		Optional<CartItem> existingCartItem =
+				cartItemRepo.findByCartIdAndProductIdAndDeletedAtIsNull(
+						cart.getId(),
+						product.getId());
 
 		if (existingCartItem.isPresent()) {
 
@@ -71,55 +79,39 @@ public class CartItemService {
 			return cartItemMapper.toResponse(cartItemRepo.save(cartItem));
 		}
 
-		CartItem newCartItem = new CartItem(request.getQuantity(), cart, product);
+		CartItem newCartItem = new CartItem(
+				request.getQuantity(),
+				cart,
+				product);
 
 		return cartItemMapper.toResponse(cartItemRepo.save(newCartItem));
 	}
 
 	public List<CartItemResponse> getAllCartItems() {
 
-		return cartItemRepo.findByDeletedAtIsNull().stream().map(cartItemMapper::toResponse)
+		return cartItemRepo.findByDeletedAtIsNull()
+				.stream()
+				.map(cartItemMapper::toResponse)
 				.collect(Collectors.toList());
 	}
 
-	public CartDetailsResponse getCartItemsByCartId(UUID cartId) {
-		
-		
+	public List<CartItemResponse> getCartItemsByCartId(UUID cartId) {
 
-		Cart cart = cartRepo.findByIdAndDeletedAtIsNull(cartId)
-		        .orElseThrow(() ->
-		                new CartNotFoundException(
-		                        "Cart with id " + cartId + " not found!"
-		                ));
+		cartRepo.findByIdAndDeletedAtIsNull(cartId)
+				.orElseThrow(() -> new CartNotFoundException(
+						"Cart with id " + cartId + " not found!"));
 
-	    List<CartItem> cartItems = cartItemRepo.findByCartIdAndDeletedAtIsNull(cartId);
-
-	    List<CartItemResponse> items = cartItems.stream()
-	            .map(cartItemMapper::toResponse)
-	            .collect(Collectors.toList());
-
-	    Integer totalItems = cartItems.stream()
-	            .mapToInt(CartItem::getQuantity)
-	            .sum();
-
-	    BigDecimal totalPrice = cartItems.stream()
-	            .map(item -> item.getProduct().getPrice()
-	                    .multiply(BigDecimal.valueOf(item.getQuantity())))
-	            .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-	    return new CartDetailsResponse(
-	            cartId,
-	           cart.getUser().getFirstName() + " " + cart.getUser().getLastName(),
-	            totalItems,
-	            totalPrice,
-	            items
-	    );
+		return cartItemRepo.findByCartIdAndDeletedAtIsNull(cartId)
+				.stream()
+				.map(cartItemMapper::toResponse)
+				.collect(Collectors.toList());
 	}
 
 	public CartItemResponse getCartItemById(UUID id) {
 
 		CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new CartItemNotFoundException("Cart item with id " + id + " not found!"));
+				.orElseThrow(() -> new CartItemNotFoundException(
+						"Cart item with id " + id + " not found!"));
 
 		return cartItemMapper.toResponse(cartItem);
 	}
@@ -127,12 +119,14 @@ public class CartItemService {
 	public CartItemResponse updateCartItem(UUID id, UpdateCartItemRequest request) {
 
 		CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new CartItemNotFoundException("Cart item with id " + id + " not found!"));
+				.orElseThrow(() -> new CartItemNotFoundException(
+						"Cart item with id " + id + " not found!"));
 
 		Product product = cartItem.getProduct();
 
 		if (request.getQuantity() > product.getStockQuantity()) {
-			throw new NotEnoughStockException("Only " + product.getStockQuantity() + " items are available in stock.");
+			throw new NotEnoughStockException(
+					"Only " + product.getStockQuantity() + " items are available in stock.");
 		}
 
 		cartItem.setQuantity(request.getQuantity());
@@ -143,7 +137,8 @@ public class CartItemService {
 	public void deleteCartItem(UUID id) {
 
 		CartItem cartItem = cartItemRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new CartItemNotFoundException("Cart item with id " + id + " not found!"));
+				.orElseThrow(() -> new CartItemNotFoundException(
+						"Cart item with id " + id + " not found!"));
 
 		cartItem.setDeletedAt(LocalDateTime.now());
 
