@@ -1,6 +1,7 @@
 package com.axians.eshop.dto.response.cartitem;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.UUID;
 
 import lombok.AllArgsConstructor;
@@ -10,19 +11,16 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CartItemResponse {
+public class CartDetailsResponse {
 
-    private UUID id;
+    private UUID cartId;
+    
+    private String userName;
 
+    private Integer totalItems;
 
-    private UUID productId;
+    private BigDecimal totalPrice;
 
-    private String productName;
-
-    private Integer quantity;
-
-    private BigDecimal unitPrice;
-
-    private BigDecimal subtotal;
+    private List<CartItemResponse> items;
 
 }
