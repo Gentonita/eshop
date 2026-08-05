@@ -17,10 +17,10 @@ import com.axians.eshop.entity.OrderItem;
 import com.axians.eshop.entity.Product;
 import com.axians.eshop.entity.User;
 import com.axians.eshop.enums.OrderStatus;
-import com.axians.eshop.exception.CartItemNotFoundException;
-import com.axians.eshop.exception.CartNotFoundException;
+
 import com.axians.eshop.exception.NotEnoughStockException;
-import com.axians.eshop.exception.OrderNotFoundException;
+import com.axians.eshop.exception.NotFoundException;
+
 import com.axians.eshop.mapper.OrderMapper;
 import com.axians.eshop.repository.CartItemRepository;
 import com.axians.eshop.repository.CartRepository;
@@ -55,12 +55,12 @@ public class OrderService {
 	public OrderResponse createOrder(CreateOrderRequest request) {
 
 		Cart cart = cartRepo.findByIdAndDeletedAtIsNull(request.getCartId())
-				.orElseThrow(() -> new CartNotFoundException("Cart with id " + request.getCartId() + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Cart with id " + request.getCartId() + " not found!"));
 
 		List<CartItem> cartItems = cartItemRepo.findByCartIdAndDeletedAtIsNull(cart.getId());
 
 		if (cartItems.isEmpty()) {
-			throw new CartItemNotFoundException("Cart is empty!");
+			throw new NotFoundException("Cart is empty!");
 		}
 
 		User user = cart.getUser();
@@ -81,12 +81,7 @@ public class OrderService {
 				throw new NotEnoughStockException("Not enough stock for product: " + product.getName());
 			}
 
-			OrderItem orderItem = new OrderItem(
-			        cartItem.getQuantity(),
-			        product.getPrice(),
-			        savedOrder,
-			        product
-			);
+			OrderItem orderItem = new OrderItem(cartItem.getQuantity(), product.getPrice(), savedOrder, product);
 
 			savedOrder.addOrderItem(orderItem);
 
@@ -105,22 +100,18 @@ public class OrderService {
 		return orderMapper.toResponse(savedOrder);
 	}
 
-	
 	public List<OrderResponse> getAllOrders() {
 
 		List<Order> orders = orderRepo.findByDeletedAtIsNull();
-		
-		return orders.stream()
-				.map(orderMapper::toResponse)
-				.collect(Collectors.toList());
-				
+
+		return orders.stream().map(orderMapper::toResponse).collect(Collectors.toList());
 
 	}
 
 	public OrderResponse getOrderById(UUID id) {
 
 		Order order = orderRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new OrderNotFoundException("Order with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Order with id " + id + " not found!"));
 
 		return orderMapper.toResponse(order);
 
@@ -135,7 +126,7 @@ public class OrderService {
 	public void deleteOrder(UUID id) {
 
 		Order order = orderRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new OrderNotFoundException("Order with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Order with id " + id + " not found!"));
 
 		order.setDeletedAt(LocalDateTime.now());
 

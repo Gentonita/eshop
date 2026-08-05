@@ -13,8 +13,8 @@ import com.axians.eshop.dto.request.user.CreateUserRequest;
 import com.axians.eshop.dto.request.user.UpdateUserRequest;
 import com.axians.eshop.dto.response.user.UserResponse;
 import com.axians.eshop.entity.User;
-import com.axians.eshop.exception.EmailAlreadyExistsException;
-import com.axians.eshop.exception.UserNotFoundException;
+import com.axians.eshop.exception.AlreadyExistsException;
+import com.axians.eshop.exception.NotFoundException;
 import com.axians.eshop.mapper.UserMapper;
 import com.axians.eshop.repository.UserRepository;
 
@@ -34,7 +34,7 @@ public class UserService {
 	public UserResponse createUser(CreateUserRequest request) {
 
 		if (userRepo.existsByEmailValue(request.getEmail())) {
-			throw new EmailAlreadyExistsException("User with this email already exists");
+			throw new AlreadyExistsException("User with this email already exists");
 		}
 
 		String hashedPassword = passwordEncoder.encode(request.getPassword());
@@ -56,19 +56,18 @@ public class UserService {
 	public UserResponse getById(UUID id) {
 
 		User user = userRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("User with id " + id + " not found!"));
 
 		return userMapper.toResponse(user);
 	}
 
 	public UserResponse updateUser(UpdateUserRequest updateUserRequest, UUID id) {
 		User user = userRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("User with id " + id + " not found!"));
 
 		user.setFirstName(updateUserRequest.getFirstName());
 		user.setLastName(updateUserRequest.getLastName());
 		user.setBirthday(updateUserRequest.getBirthday());
-	
 
 		User updatedUser = userRepo.save(user);
 
@@ -78,10 +77,9 @@ public class UserService {
 
 	public void deleteUser(UUID id) {
 		User user = userRepo.findById(id)
-				.orElseThrow(() -> new UserNotFoundException("User with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("User with id " + id + " not found!"));
 
 		user.setDeletedAt(LocalDateTime.now());
-		
 
 		userRepo.save(user);
 	}

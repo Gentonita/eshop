@@ -13,9 +13,10 @@ import com.axians.eshop.dto.request.product.UpdateStockRequest;
 import com.axians.eshop.dto.response.product.ProductResponse;
 import com.axians.eshop.entity.Category;
 import com.axians.eshop.entity.Product;
-import com.axians.eshop.exception.CategoryNotFoundException;
-import com.axians.eshop.exception.ProductAlreadyExistsException;
-import com.axians.eshop.exception.ProductNotFoundException;
+import com.axians.eshop.exception.AlreadyExistsException;
+
+import com.axians.eshop.exception.NotFoundException;
+
 import com.axians.eshop.mapper.ProductMapper;
 import com.axians.eshop.repository.CategoryRepository;
 import com.axians.eshop.repository.ProductRepository;
@@ -39,11 +40,11 @@ public class ProductService {
 		String name = request.getName().trim();
 
 		if (productRepo.existsByNameIgnoreCaseAndDeletedAtIsNull(name)) {
-			throw new ProductAlreadyExistsException("Product with this name already exists");
+			throw new AlreadyExistsException("Product with this name already exists");
 		}
 
 		Category category = categoryRepo.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
-				() -> new CategoryNotFoundException("Category with id " + request.getCategoryId() + " not found!"));
+				() -> new NotFoundException("Category with id " + request.getCategoryId() + " not found!"));
 
 		Product product = productMapper.toEntity(request, category);
 
@@ -60,7 +61,7 @@ public class ProductService {
 
 	public ProductResponse getById(UUID id) {
 		Product product = productRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Product with id " + id + " not found!"));
 
 		return productMapper.toResponse(product);
 	}
@@ -70,15 +71,14 @@ public class ProductService {
 		String name = updateRequest.getName().trim();
 
 		Product product = productRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Product with id " + id + " not found!"));
 
-		Category category = categoryRepo.findByIdAndDeletedAtIsNull(updateRequest.getCategoryId())
-				.orElseThrow(() -> new CategoryNotFoundException(
-						"Category with id " + updateRequest.getCategoryId() + " not found!"));
+		Category category = categoryRepo.findByIdAndDeletedAtIsNull(updateRequest.getCategoryId()).orElseThrow(
+				() -> new NotFoundException("Category with id " + updateRequest.getCategoryId() + " not found!"));
 
 		if (!product.getName().equalsIgnoreCase(name) && productRepo.existsByNameIgnoreCaseAndDeletedAtIsNull(name)) {
 
-			throw new ProductAlreadyExistsException("Product with this name already exists");
+			throw new AlreadyExistsException("Product with this name already exists");
 		}
 
 		product.setName(name);
@@ -90,21 +90,20 @@ public class ProductService {
 
 		return productMapper.toResponse(updatedProduct);
 	}
-	
+
 	public ProductResponse updateStock(UUID id, UpdateStockRequest request) {
 
-	    Product product = productRepo.findByIdAndDeletedAtIsNull(id)
-	            .orElseThrow(() -> new ProductNotFoundException(
-	                    "Product with id " + id + " not found!"));
+		Product product = productRepo.findByIdAndDeletedAtIsNull(id)
+				.orElseThrow(() -> new NotFoundException("Product with id " + id + " not found!"));
 
-	    product.setStockQuantity(request.getStockQuantity());
+		product.setStockQuantity(request.getStockQuantity());
 
-	    return productMapper.toResponse(productRepo.save(product));
+		return productMapper.toResponse(productRepo.save(product));
 	}
 
 	public void deleteProduct(UUID id) {
 		Product product = productRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Product with id " + id + " not found!"));
 
 		product.setDeletedAt(LocalDateTime.now());
 		productRepo.save(product);

@@ -11,8 +11,9 @@ import com.axians.eshop.dto.request.category.CreateCategoryRequest;
 import com.axians.eshop.dto.request.category.UpdateCategoryRequest;
 import com.axians.eshop.dto.response.category.CategoryResponse;
 import com.axians.eshop.entity.Category;
-import com.axians.eshop.exception.CategoryAlreadyExistsException;
-import com.axians.eshop.exception.CategoryNotFoundException;
+import com.axians.eshop.exception.AlreadyExistsException;
+
+import com.axians.eshop.exception.NotFoundException;
 import com.axians.eshop.mapper.CategoryMapper;
 import com.axians.eshop.repository.CategoryRepository;
 
@@ -32,11 +33,10 @@ public class CategoryService {
 		String name = request.getName().trim();
 
 		if (categoryRepo.existsByNameIgnoreCaseAndDeletedAtIsNull(name)) {
-			throw new CategoryAlreadyExistsException("Category with this name already exists");
+			throw new AlreadyExistsException("Category with this name already exists");
 		}
 
 		Category category = categoryMapper.toEntity(request);
-		
 
 		Category savedCategory = categoryRepo.save(category);
 
@@ -53,7 +53,7 @@ public class CategoryService {
 	public CategoryResponse getById(UUID id) {
 
 		Category category = categoryRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Category with id " + id + " not found!"));
 
 		return categoryMapper.toResponse(category);
 	}
@@ -63,11 +63,11 @@ public class CategoryService {
 		String name = updateRequest.getName().trim();
 
 		Category category = categoryRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Category with id " + id + " not found!"));
 
 		if (!category.getName().equalsIgnoreCase(name) && categoryRepo.existsByNameIgnoreCaseAndDeletedAtIsNull(name)) {
 
-			throw new CategoryAlreadyExistsException("Category with this name already exists");
+			throw new AlreadyExistsException("Category with this name already exists");
 		}
 
 		category.setName(name);
@@ -81,7 +81,7 @@ public class CategoryService {
 	public void deleteCategory(UUID id) {
 
 		Category category = categoryRepo.findByIdAndDeletedAtIsNull(id)
-				.orElseThrow(() -> new CategoryNotFoundException("Category with id " + id + " not found!"));
+				.orElseThrow(() -> new NotFoundException("Category with id " + id + " not found!"));
 
 		category.setDeletedAt(LocalDateTime.now());
 
