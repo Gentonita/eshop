@@ -9,11 +9,14 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.axians.eshop.dto.request.product.CreateProductRequest;
+import com.axians.eshop.dto.request.product.UpdateProductRequest;
+import com.axians.eshop.dto.request.product.UpdateStockRequest;
 import com.axians.eshop.dto.response.product.ProductResponse;
 import com.axians.eshop.service.ProductService;
 
@@ -44,20 +47,39 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 
 	}
-	
+
 	@GetMapping("{id}")
-	public ResponseEntity<ProductResponse> getById(@PathVariable UUID id){
+	public ResponseEntity<ProductResponse> getById(@PathVariable UUID id) {
 		ProductResponse response = productService.getById(id);
-		
+
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
+
+	@PutMapping("{id}")
+	public ResponseEntity<ProductResponse> updateProduct(@PathVariable UUID id,
+			@RequestBody @Valid UpdateProductRequest request) {
+
+		ProductResponse response = productService.updateProduct(request, id);
+
+		return ResponseEntity.ok(response);
+	}
 	
+	@PutMapping("stock/{id}")
+	public ResponseEntity<ProductResponse> updateStock(
+	        @PathVariable UUID id,
+	        @RequestBody @Valid UpdateStockRequest request) {
+
+	    ProductResponse response = productService.updateStock(id, request);
+
+	    return ResponseEntity.ok(response);
+	}
+
 	@DeleteMapping("{id}")
-	public ResponseEntity<Void> deleteProduct(@PathVariable UUID id){
+	public ResponseEntity<Void> deleteProduct(@PathVariable UUID id) {
 		productService.deleteProduct(id);
-		
+
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-		
+
 	}
 
 }

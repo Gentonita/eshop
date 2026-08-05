@@ -47,7 +47,6 @@ public class CartItemController {
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 		
 	}
-	
 	@GetMapping("cart/{cartId}")
 	public ResponseEntity<CartDetailsResponse> getCartItemsByCartId(@PathVariable UUID cartId) {
 

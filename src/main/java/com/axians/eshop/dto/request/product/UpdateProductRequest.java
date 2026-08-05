@@ -29,10 +29,7 @@ public class UpdateProductRequest {
     @DecimalMin(value = "0.01", message = "Price must be greater than 0")
     private BigDecimal price;
 
-    @NotNull(message = "Stock quantity is required")
-    @Min(value = 0, message = "Stock quantity cannot be negative")
-    private Integer stockQuantity;
-
+ 
     @NotNull(message = "Category is required")
     private UUID categoryId;
 }

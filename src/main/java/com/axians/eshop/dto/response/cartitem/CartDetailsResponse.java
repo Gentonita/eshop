@@ -7,14 +7,17 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CartDetailsResponse {
 
     private UUID cartId;
-    
+
+    private UUID userId;
+
     private String userName;
 
     private Integer totalItems;
@@ -22,5 +25,4 @@ public class CartDetailsResponse {
     private BigDecimal totalPrice;
 
     private List<CartItemResponse> items;
-
 }

@@ -95,16 +95,31 @@ public class CartItemService {
 				.collect(Collectors.toList());
 	}
 
-	public List<CartItemResponse> getCartItemsByCartId(UUID cartId) {
+	public CartDetailsResponse getCartItemsByCartId(UUID cartId) {
 
-		cartRepo.findByIdAndDeletedAtIsNull(cartId)
-				.orElseThrow(() -> new CartNotFoundException(
-						"Cart with id " + cartId + " not found!"));
+	    Cart cart = cartRepo.findByIdAndDeletedAtIsNull(cartId)
+	            .orElseThrow(() -> new CartNotFoundException(
+	                    "Cart with id " + cartId + " not found!"));
 
-		return cartItemRepo.findByCartIdAndDeletedAtIsNull(cartId)
-				.stream()
-				.map(cartItemMapper::toResponse)
-				.collect(Collectors.toList());
+	    List<CartItemResponse> items = cartItemRepo.findByCartIdAndDeletedAtIsNull(cartId)
+	            .stream()
+	            .map(cartItemMapper::toResponse)
+	            .collect(Collectors.toList());
+
+	    BigDecimal totalPrice = items.stream()
+	            .map(CartItemResponse::getSubtotal)
+	            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+	    CartDetailsResponse response = new CartDetailsResponse();
+
+	    response.setCartId(cart.getId());
+	    response.setUserId(cart.getUser().getId());
+	    response.setUserName(cart.getUser().getFirstName() + " " + cart.getUser().getLastName());
+	    response.setTotalItems(items.size());
+	    response.setTotalPrice(totalPrice);
+	    response.setItems(items);
+
+	    return response;
 	}
 
 	public CartItemResponse getCartItemById(UUID id) {
