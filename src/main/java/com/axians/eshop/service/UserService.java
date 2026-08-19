@@ -1,6 +1,8 @@
 package com.axians.eshop.service;
 
 import java.time.LocalDateTime;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.List;
 
 import java.util.UUID;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.axians.eshop.dto.request.ChangePasswordRequest;
 import com.axians.eshop.dto.request.user.CreateUserRequest;
 import com.axians.eshop.dto.request.user.UpdateUserRequest;
 import com.axians.eshop.dto.response.user.UserResponse;
@@ -74,7 +77,35 @@ public class UserService {
 		return userMapper.toResponse(updatedUser);
 
 	}
+	
+	public void changePassword(ChangePasswordRequest request) {
 
+	    Authentication authentication =
+	            SecurityContextHolder.getContext().getAuthentication();
+
+	    User user = (User) authentication.getPrincipal();
+
+	    if (!passwordEncoder.matches(
+	            request.getCurrentPassword(),
+	            user.getPassword())) {
+
+	        throw new RuntimeException("Current password is incorrect");
+	    }
+
+	    if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+	        throw new RuntimeException("New passwords do not match");
+	    }
+
+	    String newPassword =
+	            passwordEncoder.encode(request.getNewPassword());
+
+	    user.setPassword(newPassword);
+
+	    userRepo.save(user);
+	}
+
+	
+	
 	public void deleteUser(UUID id) {
 		User user = userRepo.findById(id)
 				.orElseThrow(() -> new NotFoundException("User with id " + id + " not found!"));
