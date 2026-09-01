@@ -1,10 +1,15 @@
-package com.axians.eshop.service;
+	package com.axians.eshop.service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.axians.eshop.dto.request.product.CreateProductRequest;
@@ -109,5 +114,101 @@ public class ProductService {
 		productRepo.save(product);
 
 	}
+	
+	public List<ProductResponse> getProductsByCategory(UUID categoryId) {
+
+	    return productRepo
+	            .findByCategory_IdAndDeletedAtIsNull(categoryId)
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
+	
+	public List<ProductResponse> getActiveProducts() {
+
+	    return productRepo
+	            .findByIsActiveTrueAndDeletedAtIsNull()
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
+	
+	public List<ProductResponse> searchProducts(String name){
+		
+		return productRepo
+				.findByNameContainingIgnoreCaseAndDeletedAtIsNull(name)
+				.stream()
+				.map(productMapper::toResponse)
+				.toList();
+	}
+	
+	public List<ProductResponse> getProductsByPriceRange(
+	        BigDecimal minPrice,
+	        BigDecimal maxPrice) {
+
+	    return productRepo
+	            .findByPriceBetweenAndDeletedAtIsNullOrderByPriceAsc(minPrice, maxPrice)
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
+	
+	public List<ProductResponse> getProductsByPriceAsc() {
+
+	    return productRepo
+	            .findByDeletedAtIsNullOrderByPriceAsc()
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
+	
+	public List<ProductResponse> getProductsByPriceDesc() {
+
+	    return productRepo
+	            .findByDeletedAtIsNullOrderByPriceDesc()
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
+	
+	public List<ProductResponse> getTop5MostExpensiveProducts() {
+
+	    return productRepo
+	            .findTop5ByDeletedAtIsNullOrderByPriceDesc()
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
+	
+	public List<ProductResponse> getLowStockProducts(Integer quantity) {
+
+	    return productRepo
+	            .findByStockQuantityLessThanEqualAndDeletedAtIsNull(quantity)
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
+	
+	
+	public Page<ProductResponse> getAllProducts(
+	        int page,
+	        int size,
+	        String sortBy,
+	        String direction) {
+
+	    Sort sort = direction.equalsIgnoreCase("desc")
+	            ? Sort.by(sortBy).descending()
+	            : Sort.by(sortBy).ascending();
+
+	    Pageable pageable =
+	            PageRequest.of(page, size, sort);
+
+	    return productRepo
+	            .findByDeletedAtIsNull(pageable)
+	            .map(productMapper::toResponse);
+	}
+	
+	
+	
 
 }

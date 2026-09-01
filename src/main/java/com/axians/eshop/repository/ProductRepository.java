@@ -1,9 +1,13 @@
 package com.axians.eshop.repository;
 
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -16,6 +20,31 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
 	List<Product> findByDeletedAtIsNull();
 
+	List<Product> findByCategory_IdAndDeletedAtIsNull(UUID id);
+	
+	List<Product> findByIsActiveTrueAndDeletedAtIsNull();
+	
+	List<Product> findByNameContainingIgnoreCaseAndDeletedAtIsNull(String name);
+	
 	Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
+	
+	List<Product> findByPriceBetweenAndDeletedAtIsNullOrderByPriceAsc(
+	        BigDecimal minPrice,
+	        BigDecimal maxPrice
+	);
+	
+	List<Product> findByDeletedAtIsNullOrderByPriceAsc();
 
+	List<Product> findByDeletedAtIsNullOrderByPriceDesc();
+	
+
+	List<Product> findTop5ByDeletedAtIsNullOrderByPriceDesc();
+	
+	List<Product> findTop5ByDeletedAtIsNullOrderByPriceAsc();
+	
+	List<Product> findByStockQuantityLessThanAndDeletedAtIsNull(Integer quantity);
+	
+	List<Product> findByStockQuantityLessThanEqualAndDeletedAtIsNull(Integer quantity);
+	
+	Page<Product> findByDeletedAtIsNull(Pageable pageable);
 }
