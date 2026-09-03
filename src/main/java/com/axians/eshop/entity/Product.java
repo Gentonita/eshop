@@ -37,6 +37,9 @@ public class Product extends BaseEntity {
 	@Column(nullable = false)
 	private Boolean isActive = true;
 
+
+	private String imageName;
+
 	@ManyToOne
 	@JoinColumn(name = "category_id", nullable = false)
 	private Category category;
@@ -47,15 +50,16 @@ public class Product extends BaseEntity {
 	@OneToMany(mappedBy = "product")
 	private List<OrderItem> orderItems = new ArrayList<>();
 
-	public Product(String name, String description, BigDecimal price, Integer stockQuantity, Category category) {
+	public Product(String name, String description, BigDecimal price, Integer stockQuantity, String imageName,
+			Category category) {
 
 		this.name = name;
 		this.description = description;
 		this.price = price;
 		this.stockQuantity = stockQuantity;
+		this.imageName = imageName;
 		this.category = category;
 		this.isActive = true;
-
 	}
 
 }

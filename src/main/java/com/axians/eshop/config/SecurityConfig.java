@@ -28,15 +28,19 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
+        
+        .cors(cors -> {})
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
 
                 // AUTH
                 .requestMatchers("/auth/login").permitAll()
+                
+                .requestMatchers("/uploads/**").permitAll()
 
                 // PRODUCTS
                 .requestMatchers(HttpMethod.GET, "/products/**")
-                    .hasAnyRole("USER", "ADMIN")
+                .permitAll()
                 .requestMatchers(HttpMethod.POST, "/products/**")
                     .hasRole("ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/products/**")

@@ -9,12 +9,13 @@ import com.axians.eshop.entity.Product;
 @Component
 public class ProductMapper {
 
-    public Product toEntity(CreateProductRequest request, Category category) {
+    public Product toEntity(CreateProductRequest request, String imageName, Category category) {
         return new Product(
                 request.getName().trim(),
                 request.getDescription(),
                 request.getPrice(),
                 request.getStockQuantity(),
+                imageName,
                 category
         );
     }
@@ -27,6 +28,7 @@ public class ProductMapper {
                 product.getPrice(),
                 product.getStockQuantity(),
                 product.getIsActive(),
+                product.getImageName(),
                 product.getCategory().getId(),
                 product.getCategory().getName(),
                 product.getCreatedAt()

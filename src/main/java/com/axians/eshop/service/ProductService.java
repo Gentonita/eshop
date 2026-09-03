@@ -1,4 +1,4 @@
-	package com.axians.eshop.service;
+package com.axians.eshop.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -51,7 +51,7 @@ public class ProductService {
 		Category category = categoryRepo.findByIdAndDeletedAtIsNull(request.getCategoryId()).orElseThrow(
 				() -> new NotFoundException("Category with id " + request.getCategoryId() + " not found!"));
 
-		Product product = productMapper.toEntity(request, category);
+		Product product = productMapper.toEntity(request, request.getImageName(), category);
 
 		Product savedProduct = productRepo.save(product);
 
@@ -114,101 +114,58 @@ public class ProductService {
 		productRepo.save(product);
 
 	}
-	
+
 	public List<ProductResponse> getProductsByCategory(UUID categoryId) {
 
-	    return productRepo
-	            .findByCategory_IdAndDeletedAtIsNull(categoryId)
-	            .stream()
-	            .map(productMapper::toResponse)
-	            .toList();
-	}
-	
-	public List<ProductResponse> getActiveProducts() {
-
-	    return productRepo
-	            .findByIsActiveTrueAndDeletedAtIsNull()
-	            .stream()
-	            .map(productMapper::toResponse)
-	            .toList();
-	}
-	
-	public List<ProductResponse> searchProducts(String name){
-		
-		return productRepo
-				.findByNameContainingIgnoreCaseAndDeletedAtIsNull(name)
-				.stream()
-				.map(productMapper::toResponse)
+		return productRepo.findByCategory_IdAndDeletedAtIsNull(categoryId).stream().map(productMapper::toResponse)
 				.toList();
 	}
-	
-	public List<ProductResponse> getProductsByPriceRange(
-	        BigDecimal minPrice,
-	        BigDecimal maxPrice) {
 
-	    return productRepo
-	            .findByPriceBetweenAndDeletedAtIsNullOrderByPriceAsc(minPrice, maxPrice)
-	            .stream()
-	            .map(productMapper::toResponse)
-	            .toList();
+	public List<ProductResponse> getActiveProducts() {
+
+		return productRepo.findByIsActiveTrueAndDeletedAtIsNull().stream().map(productMapper::toResponse).toList();
 	}
-	
+
+	public List<ProductResponse> searchProducts(String name) {
+
+		return productRepo.findByNameContainingIgnoreCaseAndDeletedAtIsNull(name).stream()
+				.map(productMapper::toResponse).toList();
+	}
+
+	public List<ProductResponse> getProductsByPriceRange(BigDecimal minPrice, BigDecimal maxPrice) {
+
+		return productRepo.findByPriceBetweenAndDeletedAtIsNullOrderByPriceAsc(minPrice, maxPrice).stream()
+				.map(productMapper::toResponse).toList();
+	}
+
 	public List<ProductResponse> getProductsByPriceAsc() {
 
-	    return productRepo
-	            .findByDeletedAtIsNullOrderByPriceAsc()
-	            .stream()
-	            .map(productMapper::toResponse)
-	            .toList();
+		return productRepo.findByDeletedAtIsNullOrderByPriceAsc().stream().map(productMapper::toResponse).toList();
 	}
-	
+
 	public List<ProductResponse> getProductsByPriceDesc() {
 
-	    return productRepo
-	            .findByDeletedAtIsNullOrderByPriceDesc()
-	            .stream()
-	            .map(productMapper::toResponse)
-	            .toList();
+		return productRepo.findByDeletedAtIsNullOrderByPriceDesc().stream().map(productMapper::toResponse).toList();
 	}
-	
+
 	public List<ProductResponse> getTop5MostExpensiveProducts() {
 
-	    return productRepo
-	            .findTop5ByDeletedAtIsNullOrderByPriceDesc()
-	            .stream()
-	            .map(productMapper::toResponse)
-	            .toList();
+		return productRepo.findTop5ByDeletedAtIsNullOrderByPriceDesc().stream().map(productMapper::toResponse).toList();
 	}
-	
+
 	public List<ProductResponse> getLowStockProducts(Integer quantity) {
 
-	    return productRepo
-	            .findByStockQuantityLessThanEqualAndDeletedAtIsNull(quantity)
-	            .stream()
-	            .map(productMapper::toResponse)
-	            .toList();
+		return productRepo.findByStockQuantityLessThanEqualAndDeletedAtIsNull(quantity).stream()
+				.map(productMapper::toResponse).toList();
 	}
-	
-	
-	public Page<ProductResponse> getAllProducts(
-	        int page,
-	        int size,
-	        String sortBy,
-	        String direction) {
 
-	    Sort sort = direction.equalsIgnoreCase("desc")
-	            ? Sort.by(sortBy).descending()
-	            : Sort.by(sortBy).ascending();
+	public Page<ProductResponse> getAllProducts(int page, int size, String sortBy, String direction) {
 
-	    Pageable pageable =
-	            PageRequest.of(page, size, sort);
+		Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
 
-	    return productRepo
-	            .findByDeletedAtIsNull(pageable)
-	            .map(productMapper::toResponse);
+		Pageable pageable = PageRequest.of(page, size, sort);
+
+		return productRepo.findByDeletedAtIsNull(pageable).map(productMapper::toResponse);
 	}
-	
-	
-	
 
 }
