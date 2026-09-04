@@ -120,6 +120,14 @@ public class ProductService {
 		return productRepo.findByCategory_IdAndDeletedAtIsNull(categoryId).stream().map(productMapper::toResponse)
 				.toList();
 	}
+	
+	public List<ProductResponse> getProductsByCategoryName(String categoryName) {
+	    return productRepo
+	            .findByCategory_NameIgnoreCaseAndDeletedAtIsNull(categoryName)
+	            .stream()
+	            .map(productMapper::toResponse)
+	            .toList();
+	}
 
 	public List<ProductResponse> getActiveProducts() {
 
@@ -128,7 +136,7 @@ public class ProductService {
 
 	public List<ProductResponse> searchProducts(String name) {
 
-		return productRepo.findByNameContainingIgnoreCaseAndDeletedAtIsNull(name).stream()
+		return productRepo.findByNameStartingWithIgnoreCaseAndDeletedAtIsNull(name).stream()
 				.map(productMapper::toResponse).toList();
 	}
 

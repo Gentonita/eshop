@@ -58,7 +58,13 @@ public class ProductController {
 
 		return ResponseEntity.status(HttpStatus.OK).body(response);
 	}
-
+	
+	@GetMapping("/category/{categoryName}")
+	ResponseEntity<List<ProductResponse>> getByName(@PathVariable String categoryName) {
+		List<ProductResponse> response = productService.getProductsByCategoryName(categoryName);
+		return ResponseEntity.status(HttpStatus.OK).body(response);
+	}
+ 
 	@PutMapping("{id}")
 	public ResponseEntity<ProductResponse> updateProduct(@PathVariable UUID id,
 			@RequestBody @Valid UpdateProductRequest request) {
@@ -85,7 +91,7 @@ public class ProductController {
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 
 	}
-	@GetMapping("/category/{id}")
+	@GetMapping("/category/id/{id}")
 	public ResponseEntity<List<ProductResponse>> getProductsByCategory(
 	        @PathVariable UUID id) {
 

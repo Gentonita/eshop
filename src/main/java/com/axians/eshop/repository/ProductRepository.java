@@ -22,9 +22,12 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 
 	List<Product> findByCategory_IdAndDeletedAtIsNull(UUID id);
 	
+	
+	List<Product> findByCategory_NameIgnoreCaseAndDeletedAtIsNull(String categoryName);
+	
 	List<Product> findByIsActiveTrueAndDeletedAtIsNull();
 	
-	List<Product> findByNameContainingIgnoreCaseAndDeletedAtIsNull(String name);
+	List<Product> findByNameStartingWithIgnoreCaseAndDeletedAtIsNull(String name);
 	
 	Optional<Product> findByIdAndDeletedAtIsNull(UUID id);
 	
@@ -32,6 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 	        BigDecimal minPrice,
 	        BigDecimal maxPrice
 	);
+	
 	
 	List<Product> findByDeletedAtIsNullOrderByPriceAsc();
 
