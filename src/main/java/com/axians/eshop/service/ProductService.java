@@ -167,13 +167,28 @@ public class ProductService {
 				.map(productMapper::toResponse).toList();
 	}
 
-	public Page<ProductResponse> getAllProducts(int page, int size, String sortBy, String direction) {
+	public Page<ProductResponse> getAllProducts(
+	        int page,
+	        int size,
+	        String sortBy,
+	        String direction,
+	        String categoryName) {
 
-		Sort sort = direction.equalsIgnoreCase("desc") ? Sort.by(sortBy).descending() : Sort.by(sortBy).ascending();
+	    Sort sort = direction.equalsIgnoreCase("desc")
+	            ? Sort.by(sortBy).descending()
+	            : Sort.by(sortBy).ascending();
 
-		Pageable pageable = PageRequest.of(page, size, sort);
+	    Pageable pageable = PageRequest.of(page, size, sort);
 
-		return productRepo.findByDeletedAtIsNull(pageable).map(productMapper::toResponse);
+	    if (categoryName != null && !categoryName.isBlank()) {
+	        return productRepo
+	                .findByCategory_NameIgnoreCaseAndDeletedAtIsNull(categoryName, pageable)
+	                .map(productMapper::toResponse);
+	    }
+
+	    return productRepo
+	            .findByDeletedAtIsNull(pageable)
+	            .map(productMapper::toResponse);
 	}
 
 }

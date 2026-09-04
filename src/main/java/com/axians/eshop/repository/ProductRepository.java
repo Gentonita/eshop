@@ -51,4 +51,9 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
 	List<Product> findByStockQuantityLessThanEqualAndDeletedAtIsNull(Integer quantity);
 	
 	Page<Product> findByDeletedAtIsNull(Pageable pageable);
+	
+	Page<Product> findByCategory_NameIgnoreCaseAndDeletedAtIsNull(
+	        String categoryName,
+	        Pageable pageable
+	);
 }

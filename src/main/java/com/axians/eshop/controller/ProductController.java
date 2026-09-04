@@ -128,21 +128,7 @@ public class ProductController {
 	    );
 	}
 	
-	@GetMapping("/price-asc")
-	public ResponseEntity<List<ProductResponse>> getProductsByPriceAsc() {
 
-	    return ResponseEntity.ok(
-	            productService.getProductsByPriceAsc()
-	    );
-	}
-	
-	@GetMapping("/price-desc")
-	public ResponseEntity<List<ProductResponse>> getProductsByPriceDesc() {
-
-	    return ResponseEntity.ok(
-	            productService.getProductsByPriceDesc()
-	    );
-	}
 	
 	@GetMapping("/top-expensive")
 	public ResponseEntity<List<ProductResponse>> getTop5MostExpensiveProducts() {
@@ -164,16 +150,19 @@ public class ProductController {
 	@GetMapping
 	public ResponseEntity<Page<ProductResponse>> getAllProducts(
 	        @RequestParam(defaultValue = "0") int page,
-	        @RequestParam(defaultValue = "10") int size,
+	        @RequestParam(defaultValue = "15") int size,
 	        @RequestParam(defaultValue = "name") String sortBy,
-	        @RequestParam(defaultValue = "asc") String direction) {
+	        @RequestParam(defaultValue = "asc") String direction,
+	        @RequestParam(required = false) String categoryName) {
 
 	    return ResponseEntity.ok(
 	            productService.getAllProducts(
 	                    page,
 	                    size,
 	                    sortBy,
-	                    direction)
+	                    direction,
+	                    categoryName
+	            )
 	    );
 	}
 
