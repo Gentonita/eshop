@@ -37,10 +37,16 @@ public class AuthService {
                 user.getEmail().getValue());
 
         LoginResponse response = new LoginResponse();
+
         response.setToken(token);
+        response.setUserId(user.getId());
+
+        response.setFullName(
+                user.getFirstName() + " " + user.getLastName()
+        );
+        
+        response.setRole(user.getRole());
 
         return response;
-        
-        
     }
 }

@@ -114,5 +114,16 @@ public class UserService {
 
 		userRepo.save(user);
 	}
+	
+	public UserResponse getCurrentUser(String email) {
+		
+
+	    User user = userRepo
+	            .findByEmailValueAndDeletedAtIsNull(email)
+	            .orElseThrow(() ->
+	                    new NotFoundException("User not found"));
+
+	    return userMapper.toResponse(user);
+	}
 
 }

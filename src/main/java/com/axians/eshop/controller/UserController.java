@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -77,5 +78,15 @@ public class UserController {
 
 	    return ResponseEntity.noContent().build();
 	}
+	
+	@GetMapping("/me")
+	public UserResponse getCurrentUser(Authentication authentication) {
+
+	    String email = authentication.getName();
+
+	    return userService.getCurrentUser(email);
+	}
+	
+	
 
 }

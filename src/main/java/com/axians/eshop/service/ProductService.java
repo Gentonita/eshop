@@ -181,6 +181,10 @@ public class ProductService {
 	    Pageable pageable = PageRequest.of(page, size, sort);
 
 	    if (categoryName != null && !categoryName.isBlank()) {
+	    	
+	    	System.out.println("CATEGORY: " + categoryName);
+	    	
+	    	
 	        return productRepo
 	                .findByCategory_NameIgnoreCaseAndDeletedAtIsNull(categoryName, pageable)
 	                .map(productMapper::toResponse);
