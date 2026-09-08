@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.axians.eshop.dto.request.LoginRequest;
+import com.axians.eshop.dto.request.RegisterRequest;
 import com.axians.eshop.dto.response.LoginResponse;
+import com.axians.eshop.dto.response.RegisterResponse;
 import com.axians.eshop.service.AuthService;
 
 import jakarta.validation.Valid;
@@ -26,6 +28,10 @@ public class AuthController {
 
         return ResponseEntity.ok(authService.login(request));
         
-        
+    }
+    
+    @PostMapping("/register")
+    public ResponseEntity<RegisterResponse> register(@Valid @RequestBody RegisterRequest request){
+    	return ResponseEntity.ok(authService.register(request));
     }
 }

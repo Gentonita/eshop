@@ -116,7 +116,8 @@ public class UserService {
 	}
 	
 	public UserResponse getCurrentUser(String email) {
-		
+
+	    System.out.println("EMAIL = " + email);
 
 	    User user = userRepo
 	            .findByEmailValueAndDeletedAtIsNull(email)

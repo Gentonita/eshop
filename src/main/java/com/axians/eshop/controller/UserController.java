@@ -20,6 +20,7 @@ import com.axians.eshop.dto.request.ChangePasswordRequest;
 import com.axians.eshop.dto.request.user.CreateUserRequest;
 import com.axians.eshop.dto.request.user.UpdateUserRequest;
 import com.axians.eshop.dto.response.user.UserResponse;
+import com.axians.eshop.entity.User;
 import com.axians.eshop.service.UserService;
 
 import jakarta.validation.Valid;
@@ -82,11 +83,10 @@ public class UserController {
 	@GetMapping("/me")
 	public UserResponse getCurrentUser(Authentication authentication) {
 
-	    String email = authentication.getName();
+	    User user = (User) authentication.getPrincipal();
 
-	    return userService.getCurrentUser(email);
+	    return userService.getCurrentUser(user.getEmail().getValue());
 	}
-	
 	
 
 }

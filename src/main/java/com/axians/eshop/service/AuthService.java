@@ -4,11 +4,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.axians.eshop.dto.request.LoginRequest;
+import com.axians.eshop.dto.request.RegisterRequest;
 import com.axians.eshop.dto.response.LoginResponse;
+import com.axians.eshop.dto.response.RegisterResponse;
 import com.axians.eshop.entity.User;
+import com.axians.eshop.enums.Role;
+import com.axians.eshop.exception.AlreadyExistsException;
 import com.axians.eshop.exception.InvalidCredentialsException;
 import com.axians.eshop.repository.UserRepository;
 import com.axians.eshop.security.JwtService;
+import com.axians.eshop.valueobject.Email;
 
 import lombok.RequiredArgsConstructor;
 
@@ -49,4 +54,27 @@ public class AuthService {
 
         return response;
     }
+    
+    public RegisterResponse register(RegisterRequest request) {
+
+        if (userRepository.existsByEmailValue(request.email())) {
+            throw new AlreadyExistsException("Email already exists");
+        }
+
+        User user = new User(
+                request.firstName(),
+                request.lastName(),
+                new Email(request.email()),
+                passwordEncoder.encode(request.password()),
+                request.birthday(),
+                Role.USER
+        );
+
+        userRepository.save(user);
+
+        return new RegisterResponse(
+                "User registered successfully"
+        );
+    }
+    
 }
